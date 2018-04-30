@@ -2,13 +2,12 @@
 
 extends:
    - 'airbnb-base'
-   - 'plugin:import/recommended'
-   - 'eslint:recommended'
+
 
 env:
    node: true
    browser: true
-   jest: true
+   jest/globals: true
 
 parser: babel-eslint
 
@@ -17,3 +16,5 @@ rules:
 
 plugins:
   - import
+  - jest
+  - babel
