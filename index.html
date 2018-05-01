@@ -3,18 +3,20 @@
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
     <title>title</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   </head>
   <body>
-    <script type="text/javascript" src="./src/index.js"></script></body>
-    <div class="jumbotron">
-  <h1 class="display-4">RSS reader</h1>
-  <p class="lead">extra attention content </p>
-  <hr class="my-4">
-  <p>space content </p>
-  <p class="lead">
-    <a class="btn btn-primary btn-lg" href="#" role="button">Add</a>
-  </p>
+<script type="text/javascript" src="./dist/main.js"></script>
+  <div class="jumbotron">
+   <h1 class="display-4">RSS reader</h1>
+   <p class="lead">extra attention content </p>
+    <hr class="my-4">
+   <p class="lead">
+    <a id="mainAddButton" class="btn btn-primary btn-lg" href="#" role="button">Add</a>
+   </p>
+  <div  id="addNewUrlArea" class="input-group mb-3" style="display: ">
+  <input type="text"  id="inputNewUrl" class="form-control" placeholder="Add your url" aria-label="Recipient's username" aria-describedby="basic-addon2">
 </div>
+</div>
+
   </body>
 </html>
