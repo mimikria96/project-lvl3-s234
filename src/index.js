@@ -65,17 +65,17 @@ const generateHtml = (element) => {
   parent.append(li);
   const items = channel.getElementsByTagName('item');
   const itemsParent = document.getElementById('itemsList');
-  console.log(items.length);
   for (let i = 0; i < items.length; i += 1) {
     const liForLinks = document.createElement('li');
     const a = document.createElement('a');
     a.innerHTML = items[i].firstElementChild.innerHTML;
     a.href = items[i].firstElementChild.nextElementSibling.nextElementSibling.innerHTML;
     liForLinks.append(a);
-    liForLinks.append(generateModalButton(i));
-    liForLinks.append(generateModal(i));
+    const genId = a.href.slice(a.href.length - 2);
+    liForLinks.append(generateModalButton(genId));
+    liForLinks.append(generateModal(genId));
     itemsParent.prepend(liForLinks);
-    $(`#ModalCenter${i}`).on('show.bs.modal', (e) => {
+    $(`#ModalCenter${genId}`).on('show.bs.modal', (e) => {
       const modalBody = e.relatedTarget.nextElementSibling.querySelector('.modal-body');
       modalBody.textContent = items[i].getElementsByTagName('description')[0].innerHTML;
     });
