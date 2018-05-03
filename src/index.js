@@ -52,7 +52,6 @@ const generateModalButton = (i) => {
   button.type = 'button';
   button.textContent = 'открыть описание';
   return button;
-  // document.getElementById('itemsList').firstElementChild.append(button);
 };
 const generateHtml = (element) => {
   const parent = document.getElementById('urlList');
@@ -114,20 +113,29 @@ function isValid() {
     if (!isURL(this.value) || urlList.has(this.value)) {
       this.style = 'box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 1px 8px rgba(255,0,0,.6)';
       this.dataset.status = 'invalid';
+    } else {
+      this.style = '';
+      this.dataset.status = 'valid';
     }
   } else {
+    this.dataset.status = 'none';
     this.style = '';
-    this.dataset.status = 'valid';
   }
 }
+
 function handlePaste(e) {
   const pastetext = e.clipboardData.getData('text/plain');
-  if (!isURL(pastetext) || urlList.has(pastetext)) {
-    this.style = 'box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 1px 8px rgba(255,0,0,.6)';
-    this.dataset.status = 'invalid';
+  if (this.value.length > 0) {
+    if (!isURL(pastetext) || urlList.has(pastetext)) {
+      this.style = 'box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 1px 8px rgba(255,0,0,.6)';
+      this.dataset.status = 'invalid';
+    } else {
+      this.style = '';
+      this.dataset.status = 'valid';
+    }
   } else {
+    this.dataset.status = 'none';
     this.style = '';
-    this.dataset.status = 'valid';
   }
 }
 
