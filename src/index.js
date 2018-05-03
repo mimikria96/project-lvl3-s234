@@ -12,19 +12,21 @@ const addButton = document.getElementById('mainAddButton');
 const updateButton = document.getElementById('mainUpdateButton');
 const inputNewUrl = document.getElementById('inputNewUrl');
 const domParser = new DOMParser();
+const id = () => `${Math.random().toString(36).substr(2, 9)}`;
 
 const generateLi = (item) => {
   const liForLinks = document.createElement('li');
   const a = document.createElement('a');
-  a.innerHTML = item.firstElementChild.innerHTML;
-  a.href = item.firstElementChild.nextElementSibling.nextElementSibling.innerHTML;
+  a.innerHTML = item.getElementsByTagName('title')[0].innerHTML;
+  a.href = item.getElementsByTagName('link')[0].innerHTML;
   liForLinks.append(a);
-  const genId = a.href.slice(a.href.length - 3);
+  const genId = id();
   liForLinks.append(document.createElement('br'));
-  liForLinks.append(modal.genModal(genId));
   liForLinks.append(modal.genButton(genId));
+  liForLinks.append(modal.genModal(genId));
   $(`#ModalCenter${genId}`).on('show.bs.modal', (e) => {
     const modalBody = e.relatedTarget.nextElementSibling.querySelector('.modal-body');
+    console.log(item.getElementsByTagName('description')[0].innerHTML);
     modalBody.textContent = item.getElementsByTagName('description')[0].innerHTML;
   });
   const quid = item.getElementsByTagName('guid')[0].innerHTML;
@@ -35,15 +37,30 @@ const generateHtml = (element) => {
   const parent = document.getElementById('urlList');
   const li = document.createElement('li');
   const channel = element.firstElementChild.firstElementChild;
-  li.innerHTML = channel.firstElementChild.innerHTML;
+  li.innerHTML = channel.getElementsByTagName('title')[0].innerHTML;
   const div = document.createElement('div');
-  div.innerHTML = channel.firstElementChild.nextElementSibling.innerHTML;
+  div.innerHTML = channel.getElementsByTagName('description')[0].innerHTML;
   li.append(div);
   parent.append(li);
   const items = channel.getElementsByTagName('item');
   const itemsParent = document.getElementById('itemsList');
   for (let i = 0; i < items.length; i += 1) {
-    itemsParent.prepend(generateLi(items[i]));
+    const liForLinks = document.createElement('li');
+    const a = document.createElement('a');
+    a.innerHTML = items[i].getElementsByTagName('title')[0].innerHTML;
+    a.href = items[i].getElementsByTagName('link')[0].innerHTML;
+    liForLinks.append(a);
+    const genId = id();
+    liForLinks.append(document.createElement('br'));
+    liForLinks.append(modal.genButton(genId));
+    liForLinks.append(modal.genModal(genId));
+    itemsParent.prepend(liForLinks);
+    $(`#ModalCenter${genId}`).on('show.bs.modal', (e) => {
+      const modalBody = e.relatedTarget.nextElementSibling.querySelector('.modal-body');
+      modalBody.textContent = items[i].getElementsByTagName('description')[0].innerHTML;
+    });
+    const quid = items[i].getElementsByTagName('guid')[0].innerHTML;
+    showedNews.add(quid);
   }
 };
 
@@ -73,13 +90,16 @@ function addNewUrl() {
     inputNewUrl.dataset.status = 'none';
   }
 }
-function addNewItems(document) {
-  const items = document.getElementsByTagName('item');
+function addNewItems(doc) {
+  const items = doc.getElementsByTagName('item');
   const itemsParent = document.getElementById('urlList');
   for (let i = 0; i < items.length; i += 1) {
     const quid = items[i].getElementsByTagName('guid')[0].innerHTML;
+    console.log(quid);
+    console.log(showedNews);
     if (!showedNews.has(quid)) {
       itemsParent.prepend(generateLi(items[i]));
+      console.log(items[i]);
     }
   }
 }
@@ -115,7 +135,6 @@ function handlePaste(e) {
   }
 }
 function update() {
-  console.log('a');
   Promise.all(Array.from(urlList).map(getxmlFromUrl))
     .then(xmls => xmls.map(el => domParser.parseFromString(el, 'application/xml')))
     .then(documents => documents.map(addNewItems))
