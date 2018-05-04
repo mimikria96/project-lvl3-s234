@@ -21,7 +21,9 @@ const formChangeMethods = {
   valid: function valid() {
     inputNewUrl.className = ('form-control');
   },
-  initial: function initil() { formNewUrl.value = ''; },
+  initial: function initial() {
+    inputNewUrl.value = '';
+  },
 };
 
 const updateFormData = () => {
