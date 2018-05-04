@@ -10,7 +10,6 @@ import SiteState from './siteState';
 
 const addButton = document.getElementById('mainAddButton');
 // const updateButton = document.getElementById('mainUpdateButton');
-const formNewUrl = document.getElementById('formNewUrl');
 const inputNewUrl = document.getElementById('inputNewUrl');
 const state = new SiteState();
 
