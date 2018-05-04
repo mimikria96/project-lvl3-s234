@@ -1,4 +1,4 @@
-export const genModal = (i) => {
+/* export const genModal = (i) => {
   const parent = document.createElement('div');
   parent.classList.add('modal');
   parent.classList.add('fade');
@@ -40,4 +40,27 @@ export const genButton = (i) => {
   button.type = 'button';
   button.textContent = 'открыть описание';
   return button;
+};
+*/
+export default (id) => {
+  const modalDiv = document.createElement('div');
+  modalDiv.innerHTML = `
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalCenter${id}">
+  Открыть описание
+</button>
+<div class="modal fade" id="ModalCenter${id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      </div>
+    </div>
+  </div>
+</div>`;
+  return modalDiv;
 };
