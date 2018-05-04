@@ -20,7 +20,7 @@ export default class SiteState {
   addUrl(url) {
     this.urlList.add(url);
   }
-  clearForm() {
+  resetFormState() {
     this.formState = 'initial';
   }
   alertError() {

@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const parseXml = (string) => {
+export default (string) => {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(string, 'application/xml');
   const channel = xmlDoc.getElementsByTagName('channel')[0];
@@ -18,11 +16,3 @@ const parseXml = (string) => {
   });
   return { title, description, items: parseItems(items) };
 };
-
-export default function parseRss(url) {
-  return axios({
-    method: 'get',
-    url: `https://cors-anywhere.herokuapp.com/${url}`,
-    responseType: 'text',
-  }).then(response => parseXml(response.data));
-}

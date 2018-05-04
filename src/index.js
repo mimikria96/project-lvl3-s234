@@ -2,36 +2,32 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import $ from 'jquery';
 import _ from 'lodash';
-import genModal from './modal';
+import axios from 'axios';
+import * as modal from './modal';
 import parseRss from './parseRss';
 import SiteState from './siteState';
 
 
 const addButton = document.getElementById('mainAddButton');
 // const updateButton = document.getElementById('mainUpdateButton');
-// const formNewUrl = document.getElementById('formNewUrl');
+const formNewUrl = document.getElementById('formNewUrl');
 const inputNewUrl = document.getElementById('inputNewUrl');
 const state = new SiteState();
 
-const generateArticle = (items) => {
-  const itemsParent = document.getElementById('itemsList');
-  for (let i = 0; i < items.length; i += 1) {
-    const liForLinks = document.createElement('li');
-    const a = document.createElement('a');
-    a.innerHTML = items[i].itemtitle;
-    a.href = items[i].link;
-    liForLinks.append(a);
-    const genId = _.uniqueId();
-    liForLinks.append(genModal(genId));
-    itemsParent.append(liForLinks);
-    const { quid } = items[i];
-    state.quidList.add(quid);
-    $(`#ModalCenter${genId}`).on('show.bs.modal', (e) => {
-      const modalBody = e.relatedTarget.nextElementSibling.querySelector('.modal-body');
-      modalBody.textContent = items[i].itemdescription;
-    });
-  }
+const formChangeMethods = {
+  invalid: function invalid() {
+    inputNewUrl.className = ('form-control is-invalid');
+  },
+  valid: function valid() {
+    inputNewUrl.className = ('form-control');
+  },
+  initial: function initil() { formNewUrl.value = ''; },
 };
+
+const updateFormData = () => {
+  formChangeMethods[state.formState]();
+};
+
 
 const generateFeed = (obj) => {
   const parent = document.getElementById('urlList');
@@ -41,9 +37,32 @@ const generateFeed = (obj) => {
   div.innerHTML = obj.description;
   li.append(div);
   parent.append(li);
-  generateArticle(obj.items);
+  const itemsParent = document.getElementById('itemsList');
+  itemsParent.append(modal.genModal());
+  const { items } = obj;
+  for (let i = 0; i < items.length; i += 1) {
+    const liForLinks = document.createElement('li');
+    const a = document.createElement('a');
+    a.innerHTML = items[i].itemtitle;
+    a.href = items[i].link;
+    liForLinks.append(a);
+    const genId = _.uniqueId();
+    liForLinks.append(modal.genButton(genId));
+    itemsParent.append(liForLinks);
+    const { quid } = items[i];
+    state.quidList.add(quid);
+    $(`#ModalButton${genId}`).on('click', () => {
+      const modalBody = document.querySelector('#modal-body');
+      modalBody.textContent = items[i].itemdescription;
+    });
+  }
 };
 
+const getRss = url => axios({
+  method: 'get',
+  url: `https://cors-anywhere.herokuapp.com/${url}`,
+  responseType: 'text',
+});
 
 const showError = (msg) => {
   const parent = addButton.parentNode;
@@ -59,32 +78,22 @@ const showError = (msg) => {
 function addNewUrl() {
   if (state.formState === 'valid') {
     const url = inputNewUrl.value;
-    parseRss(url)
+    getRss(url)
+      .then(response => parseRss(response.data))
       .then((parsedObj) => {
         generateFeed(parsedObj);
         state.addUrl(url);
-        state.clearForm();
-        inputNewUrl.value = '';
+        state.resetFormState();
+        updateFormData();
       })
-      .catch((e) => {
+      .catch(() => {
         showError('ошибка загрузки!');
         state.alertError();
-        console.log(e);
       });
   }
 }
 
-function isValid() {
-  const url = this.value;
-  state.validate(url);
-  if (state.formState === 'invalid') {
-    // formNewUrl.classList.add = ('has-error');
-    this.style = 'box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 1px 8px rgba(255,0,0,.6)';
-  } else {
-    // formNewUrl.classList.remove = ('has-error');
-    this.style = '';
-  }
-}
+
 /* function addNewItems(doc) {
   const items = doc.getElementsByTagName('item');
   const itemsParent = document.getElementById('urlList');
@@ -124,5 +133,9 @@ function update() {
 // inputNewUrl.addEventListener('paste', handlePaste);
 // updateButton.addEventListener('click', update);
 
-inputNewUrl.addEventListener('input', isValid);
+inputNewUrl.oninput = (event) => {
+  const url = event.currentTarget.value;
+  state.validate(url);
+  updateFormData();
+};
 addButton.addEventListener('click', addNewUrl);
