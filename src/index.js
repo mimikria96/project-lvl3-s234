@@ -14,13 +14,13 @@ const inputNewUrl = document.getElementById('inputNewUrl');
 const state = new SiteState();
 
 const formChangeMethods = {
-  invalid: function invalid() {
-    inputNewUrl.className = ('form-control is-invalid');
+  invalid: () => {
+    inputNewUrl.className = 'form-control is-invalid';
   },
-  valid: function valid() {
-    inputNewUrl.className = ('form-control');
+  valid: () => {
+    inputNewUrl.className = 'form-control';
   },
-  initial: function initial() {
+  initial: () => {
     inputNewUrl.value = '';
   },
 };
@@ -41,22 +41,22 @@ const generateFeed = (obj) => {
   const itemsParent = document.getElementById('itemsList');
   itemsParent.append(modal.genModal());
   const { items } = obj;
-  for (let i = 0; i < items.length; i += 1) {
+  items.forEach((item) => {
     const liForLinks = document.createElement('li');
     const a = document.createElement('a');
-    a.innerHTML = items[i].itemtitle;
-    a.href = items[i].link;
+    a.innerHTML = item.itemtitle;
+    a.href = item.link;
     liForLinks.append(a);
-    const genId = _.uniqueId();
-    liForLinks.append(modal.genButton(genId));
+    const id = _.uniqueId();
+    liForLinks.append(modal.genButton(id));
     itemsParent.append(liForLinks);
-    const { quid } = items[i];
+    const { quid } = item;
     state.quidList.add(quid);
-    $(`#ModalButton${genId}`).on('click', () => {
+    $(`#ModalButton${id}`).on('click', () => {
       const modalBody = document.querySelector('#modal-body');
-      modalBody.textContent = items[i].itemdescription;
+      modalBody.textContent = item.itemdescription;
     });
-  }
+  });
 };
 
 const getRss = url => axios({
@@ -134,9 +134,9 @@ function update() {
 // inputNewUrl.addEventListener('paste', handlePaste);
 // updateButton.addEventListener('click', update);
 
-inputNewUrl.oninput = (event) => {
-  const url = event.currentTarget.value;
+$('#inputNewUrl').on('input', (e) => {
+  const url = e.currentTarget.value;
   state.validate(url);
   updateFormData();
-};
+});
 addButton.addEventListener('click', addNewUrl);
