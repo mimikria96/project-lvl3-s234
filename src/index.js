@@ -95,45 +95,43 @@ function addNewUrl() {
 }
 
 
-/* function addNewItems(doc) {
-  const items = doc.getElementsByTagName('item');
-  const itemsParent = document.getElementById('urlList');
-  for (let i = 0; i < items.length; i += 1) {
-    const quid = items[i].getElementsByTagName('guid')[0].innerHTML;
-    console.log(quid);
-    console.log(showedNews);
-    if (!state.quidList.has(quid)) {
-      itemsParent.prepend(generateLi(items[i]));
-      console.log(items[i]);
-    }
-  }
+function addNewArticles(obj) {
+  const { items } = obj;
+  const itemsParent = document.getElementById('itemsList');
+  console.log(items);
+  const newItems = items.filter(item => !state.quidList.has(item.quid));
+  console.log(newItems);
+  newItems.forEach((item) => {
+    const liForLinks = document.createElement('li');
+    const a = document.createElement('a');
+    a.innerHTML = item.itemtitle;
+    a.href = item.link;
+    liForLinks.append(a);
+    const id = _.uniqueId();
+    liForLinks.append(modal.genButton(id));
+    itemsParent.append(liForLinks);
+    const { quid } = item;
+    state.quidList.add(quid);
+    $(`#ModalButton${id}`).on('click', () => {
+      const modalBody = document.querySelector('#modal-body');
+      modalBody.textContent = item.itemdescription;
+    });
+  });
 }
 
-function handlePaste(e) {
-  const pastetext = e.clipboardData.getData('text/plain');
-  if (this.value.length > 0) {
-    if (!isURL(pastetext) || urlList.has(pastetext)) {
-      this.style = 'box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 1px 8px rgba(255,0,0,.6)';
-      this.dataset.status = 'invalid';
-    } else {
-      this.style = '';
-      this.dataset.status = 'valid';
-    }
-  } else {
-    this.dataset.status = 'none';
-    this.style = '';
-  }
-}
-function update() {
-  Promise.all(Array.from(urlList).map(getxmlFromUrl))
-    .then(xmls => xmls.map(el => domParser.parseFromString(el, 'application/xml')))
-    .then(documents => documents.map(addNewItems))
-    .catch(e => console.log(e));
-}
-*/
-// inputNewUrl.addEventListener('paste', handlePaste);
-// updateButton.addEventListener('click', update);
 
+function updateFeed() {
+  Promise.all(Array.from(state.urlList).map(getRss))
+    .then(responses => responses.map(res => parseRss(res.data)))
+    .then((parsedObjects) => {
+      parsedObjects.map(addNewArticles);
+      setTimeout(updateFeed, 5000);
+    })
+    .catch(() => {
+      setTimeout(updateFeed, 20000);
+    });
+}
+updateFeed();
 $('#inputNewUrl').on('input', (e) => {
   const url = e.currentTarget.value;
   state.validate(url);
