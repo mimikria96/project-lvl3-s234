@@ -137,4 +137,4 @@ $('#inputNewUrl').on('input', (e) => {
   state.validate(url);
   updateFormData();
 });
-addButton.addEventListener('click', addNewUrl);
+$('#mainAddButton').on('click', addNewUrl);
