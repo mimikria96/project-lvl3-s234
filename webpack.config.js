@@ -7,6 +7,9 @@ module.exports = {
       template: 'index.html',
     }),
   ],
+  devServer: {
+    contentBase: './dist',
+  },
   module: {
     rules: [
       {

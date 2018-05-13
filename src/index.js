@@ -75,7 +75,6 @@ const getRss = (url) => {
     },
     error: () => {
       $('#loading').hide();
-      throw new Error('ошибка загрузки!');
     },
     complete: () => {
       $('#loading').hide();
@@ -119,7 +118,7 @@ const updateFeed = async () => {
   }
 };
 updateFeed();
-$('#loading').hide();
+
 $('#ModalCenter').on('show.bs.modal', (event) => {
   const pressedBtn = $(event.relatedTarget);
   const content = pressedBtn.next().text();
